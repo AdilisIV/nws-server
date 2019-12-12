@@ -6,7 +6,8 @@
 
 const app = require('../app');
 const debug = require('debug')('nws-server:server');
-const http = require('http');
+const https = require('https');
+const fs = require('fs');
 
 /**
  * Get port from environment and store in Express.
@@ -16,10 +17,14 @@ const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 /**
- * Create HTTP server.
+ * Create HTTPS server.
  */
 
-const server = http.createServer(app);
+var options = {
+  key: fs.readFileSync('/Users/user/Documents/KEYS/cert-example/server.key', 'utf8'),
+  cert: fs.readFileSync('/Users/user/Documents/KEYS/cert-example/server.cert', 'utf8')
+};
+var server = https.createServer(options, app);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -86,5 +91,5 @@ function onListening() {
   const bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+  console.log('Listening on ' + bind)
 }
