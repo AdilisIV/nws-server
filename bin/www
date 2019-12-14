@@ -8,12 +8,14 @@ const app = require('../app');
 const debug = require('debug')('nws-server:server');
 const https = require('https');
 const fs = require('fs');
+const config = require('../config/server.config');
+const db = require('../db/db');
 
 /**
  * Get port from environment and store in Express.
  */
 
-const port = normalizePort(process.env.PORT || '3000');
+const port = normalizePort(process.env.PORT || config.port);
 app.set('port', port);
 
 /**
@@ -21,37 +23,42 @@ app.set('port', port);
  */
 
 var options = {
-  key: fs.readFileSync('/Users/user/Documents/KEYS/cert-example/server.key', 'utf8'),
-  cert: fs.readFileSync('/Users/user/Documents/KEYS/cert-example/server.cert', 'utf8')
+    key: fs.readFileSync('/Users/user/Documents/KEYS/cert-example/server.key', 'utf8'),
+    cert: fs.readFileSync('/Users/user/Documents/KEYS/cert-example/server.cert', 'utf8')
 };
 var server = https.createServer(options, app);
 
 /**
- * Listen on provided port, on all network interfaces.
+ * Connect to database. Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+db.connect(config.database, function (err) {
+    if (err) {
+        console.log("Not able to get connection : " + err);
+    }
+    server.listen(port);
+    server.on('error', onError);
+    server.on('listening', onListening);
+});
 
 /**
  * Normalize a port into a number, string, or false.
  */
 
 function normalizePort(val) {
-  const port = parseInt(val, 10);
+    const port = parseInt(val, 10);
 
-  if (isNaN(port)) {
-    // named pipe
-    return val;
-  }
+    if (isNaN(port)) {
+        // named pipe
+        return val;
+    }
 
-  if (port >= 0) {
-    // port number
-    return port;
-  }
+    if (port >= 0) {
+        // port number
+        return port;
+    }
 
-  return false;
+    return false;
 }
 
 /**
@@ -59,27 +66,27 @@ function normalizePort(val) {
  */
 
 function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
+    if (error.syscall !== 'listen') {
+        throw error;
+    }
 
-  const bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
+    const bind = typeof port === 'string'
+        ? 'Pipe ' + port
+        : 'Port ' + port;
 
-  // handle specific listen errors with friendly messages
-  switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
-      process.exit(1);
-      break;
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
-      process.exit(1);
-      break;
-    default:
-      throw error;
-  }
+    // handle specific listen errors with friendly messages
+    switch (error.code) {
+        case 'EACCES':
+            console.error(bind + ' requires elevated privileges');
+            process.exit(1);
+            break;
+        case 'EADDRINUSE':
+            console.error(bind + ' is already in use');
+            process.exit(1);
+            break;
+        default:
+            throw error;
+    }
 }
 
 /**
@@ -87,9 +94,9 @@ function onError(error) {
  */
 
 function onListening() {
-  const addr = server.address();
-  const bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-  console.log('Listening on ' + bind)
+    const addr = server.address();
+    const bind = typeof addr === 'string'
+        ? 'pipe ' + addr
+        : 'port ' + addr.port;
+    console.log('Listening on ' + bind)
 }
