@@ -1,4 +1,4 @@
-const pg = require('pg');
+const { Pool } = require('pg');
 let state = {
     db: null
 };
@@ -13,12 +13,13 @@ exports.connect = function (url, done) {
         return done();
     }
 
-    const client = new pg.Client(url)
-    client.connect(function (err, client) {
+    const pool = new Pool(url);
+
+    pool.connect(function (err, pool) {
         if(err) {
             return done(err)
         }
-        state.db = client;
+        state.db = pool;
         done();
     })
 
