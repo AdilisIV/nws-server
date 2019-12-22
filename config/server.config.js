@@ -1,4 +1,10 @@
 module.exports = {
     'port': 3000,
-    'database': 'postgres://admin:zxcfghb12QLN@localhost:5432/main_nws_db'
+    database: {
+        host: '127.0.0.1',
+        port: 5432,
+        database: 'main_nws_db',
+        user: 'admin',
+        password: 'zxcfghb12QLN'
+    }
 }
