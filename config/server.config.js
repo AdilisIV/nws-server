@@ -6,5 +6,6 @@ module.exports = {
         database: 'main_nws_db',
         user: 'admin',
         password: 'zxcfghb12QLN'
-    }
-}
+    },
+    'secret': 'degenerateMatrix'
+};
